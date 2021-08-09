@@ -1,4 +1,5 @@
 const DrizzyLines = require("../drizzylines.json");
+const shuffle = require("./shufflearray");
 
 const SendLyric = (server => {
     server.job = setInterval(() => {

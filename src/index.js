@@ -4,15 +4,12 @@ const fs = require("fs");
 const client = new Discord.Client({ intents: [Discord.Intents.FLAGS.GUILDS, Discord.Intents.FLAGS.GUILD_MESSAGES] });;
 
 const ServerInfo = require("../serverinfo.json");
-const DrizzyLines = require("../drizzylines.json");
 const token = process.env.DISCORD_TOKEN;
 
 const HeyDrake = require("./heydrake");
 const SetFrequency = require("./setfrequency");
 const SetCharacter = require("./char");
 const SendLyric = require("./sendLyric");
-
-const shuffle = require("./shufflearray");
 
 client.on("ready", () => {
     console.log(`Logged in as ${client.user.tag}`);
@@ -37,7 +34,6 @@ client.on("guildDelete", guild => {
 });
 
 client.on("messageCreate", msg => {
-    console.log(ServerInfo[msg.guildId].char);
     HeyDrake(msg);
     if (msg.content.startsWith(ServerInfo[msg.guildId].char)) {
         SetCharacter(msg, ServerInfo[msg.guildId]);

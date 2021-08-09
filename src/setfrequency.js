@@ -1,4 +1,3 @@
-const DrizzyLines = require("../drizzylines.json");
 const SendLyric = require("./sendLyric");
 
 const SetFrequency = ((msg, server) => {
