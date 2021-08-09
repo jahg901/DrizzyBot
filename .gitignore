@@ -1,6 +1,7 @@
 .DS_Store
 .npmignore
 serverinfo.json
+drizzylines.json
 
 # Logs
 logs
