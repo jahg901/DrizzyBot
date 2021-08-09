@@ -1,0 +1,24 @@
+{
+  "name": "drizzybot",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node src/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jahg901/DrizzyBot.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/jahg901/DrizzyBot/issues"
+  },
+  "homepage": "https://github.com/jahg901/DrizzyBot#readme",
+  "dependencies": {
+    "discord.js": "^13.0.1",
+    "dotenv": "^10.0.0",
+    "node": "^16.6.1"
+  }
+}
