@@ -1,5 +1,6 @@
 require("dotenv").config();
 const Discord = require("discord.js");
+const fs = require("fs");
 const client = new Discord.Client({ intents: [Discord.Intents.FLAGS.GUILDS, Discord.Intents.FLAGS.GUILD_MESSAGES] });;
 
 const ServerInfo = require("../serverinfo.json");
@@ -9,6 +10,7 @@ const token = process.env.DISCORD_TOKEN;
 const HeyDrake = require("./heydrake");
 const SetFrequency = require("./setfrequency");
 const SetCharacter = require("./char");
+const SendLyric = require("./sendLyric");
 
 const shuffle = require("./shufflearray");
 
@@ -18,30 +20,24 @@ client.on("ready", () => {
         if (!(guild.id in ServerInfo)) {
             ServerInfo[guild.id] = { char: ",", freq: 1, latestMsg: { content: "", channel: null } };
         }
-        ServerInfo[guild.id].job = setInterval(() => {
-            if (ServerInfo[guild.id].latestMsg.channel !== null) {
-                const msgWords = ServerInfo[guild.id].latestMsg.content.toLowerCase().split(/[^a-zA-Z0-9]+/);
-                let messageFound = false;
-                for (w of shuffle(msgWords)) {
-                    for (l of shuffle(DrizzyLines)) {
-                        if (l.replace(/[^a-zA-Z0-9 ]/g, "").toLowerCase().includes(` ${w} `)) {
-                            ServerInfo[guild.id].latestMsg.channel.send(l);
-                            messageFound = true;
-                            break;
-                        }
-                    }
-                    if (messageFound) break;
-                }
-                if (!messageFound) {
-                    ServerInfo[guild.id].latestMsg.channel.send(DrizzyLines[Math.floor(Math.random() * DrizzyLines.length)]);
-                }
-            }
-        }, ServerInfo[guild.id].freq * 60000);
+        SendLyric(ServerInfo[guild.id]);
     });
     console.log("Server information loaded");
 });
 
+client.on("guildCreate", guild => {
+    if (!(guild.id in ServerInfo)) {
+        ServerInfo[guild.id] = { char: ",", freq: 1, latestMsg: { content: "", channel: null } };
+    }
+    SendLyric(ServerInfo[guild.id]);
+});
+
+client.on("guildDelete", guild => {
+    delete ServerInfo[msg.guild.id];
+});
+
 client.on("messageCreate", msg => {
+    console.log(ServerInfo[msg.guildId].char);
     HeyDrake(msg);
     if (msg.content.startsWith(ServerInfo[msg.guildId].char)) {
         SetCharacter(msg, ServerInfo[msg.guildId]);
@@ -49,6 +45,22 @@ client.on("messageCreate", msg => {
     } else if (typeof msg.content == "string" && msg.content !== "") {
         ServerInfo[msg.guildId].latestMsg = { content: msg.content, channel: msg.channel };
     }
+});
+
+process.on("SIGINT", () => {
+    console.log("\n");
+    process.exit();
+});
+
+process.on("exit", () => {
+    fs.writeFileSync("./serverinfo.json", JSON.stringify(ServerInfo, (key, value) => {
+        if (key === "latestMsg") {
+            return { content: "", channel: null };
+        } else if (key === "job") {
+            return null;
+        }
+        return value;
+    }, 2));
 });
 
 client.login(token);
